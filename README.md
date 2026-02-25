@@ -24,39 +24,142 @@ e arquitetura aplicada ao computador
 
 Raw token cost: **~85k–100k tokens**. Too noisy for useful LLM output.
 
-After VTT-to-Insights: **~55k–65k tokens**, clean paragraphs with timestamps.
+After VTT-to-Insights: **~32k tokens**, clean paragraphs with timestamps.
 
 ---
 
 ## Features
 
 - **Noise Reduction** — Removes UUIDs, WEBVTT headers, inline timing tags, blank lines
-- **Token Optimization** — Shrinks file size 30–40% to fit within AI context windows
+- **Token Optimization** — Shrinks file size 60–70% to fit within AI context windows
 - **Smart Merging** — Converts fragmented cues into readable ~60-second paragraph blocks
 - **Timestamp Preservation** — Every block keeps its `[HH:MM:SS]` marker for video navigation
-- **Prompt Library** — Ready-made prompts for study notes, summaries, and concept extraction
-- **Zero Dependencies** — Pure Python 3 standard library, no pip install needed
-- **Batch Ready** — Process an entire semester's worth of VTTs with a shell loop
+- **Bilingual Prompt Library** — Ready-made prompts in English and Portuguese
+- **Zero Dependencies** — Pure Python 3 standard library, no `pip install` needed
+- **Cross-Platform** — Works on Windows, Mac, and Linux
+- **Batch Ready** — Process an entire semester's worth of VTTs with a single command
+
+---
+
+## Installation
+
+### Step 1 — Install Python
+
+> **Already have Python?** Open a terminal and run `python3 --version` (Mac/Linux) or `python --version` (Windows). If you see `Python 3.x.x`, skip to Step 2.
+
+**Windows**
+
+1. Go to **[python.org/downloads](https://www.python.org/downloads/)** and click "Download Python 3.x.x"
+2. Run the installer
+3. **Critical:** At the bottom of the installer, check **"Add python.exe to PATH"** before clicking Install
+4. Open **Command Prompt**: press `Win+R`, type `cmd`, press Enter
+5. Verify it worked: `python --version` → should print `Python 3.x.x`
+
+> On Windows, use `python` instead of `python3` in all commands below.
+
+**Mac**
+
+1. Open **Terminal**: press `Cmd+Space`, type `Terminal`, press Enter
+2. Install via Homebrew (recommended):
+   ```bash
+   # Install Homebrew first (if you don't have it)
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   # Then install Python
+   brew install python3
+   ```
+   Or download the installer directly from [python.org/downloads](https://www.python.org/downloads/)
+3. Verify: `python3 --version`
+
+**Linux** (Ubuntu / Debian / Pop!\_OS)
+
+```bash
+sudo apt update && sudo apt install python3
+```
+
+For Fedora / RHEL:
+```bash
+sudo dnf install python3
+```
+
+Verify: `python3 --version`
+
+---
+
+### Step 2 — Download VTT-to-Insights
+
+**Option A — Using Git** (recommended)
+
+```bash
+git clone https://github.com/maxh33/VTT-to-Insights.git
+cd VTT-to-Insights
+```
+
+**Option B — Download ZIP**
+
+Click the green **Code** button on [github.com/maxh33/VTT-to-Insights](https://github.com/maxh33/VTT-to-Insights) → **Download ZIP** → extract the folder.
+
+No `pip install` required — the script uses only Python's built-in libraries.
 
 ---
 
 ## Quick Start
 
+### Run the script
+
+**Linux / Mac**
 ```bash
-# Clone
-git clone https://github.com/yourusername/VTT-to-Insights.git
-cd VTT-to-Insights
-
-# Run (no dependencies required)
 python3 vtt_clean.py "My Lecture 2024-02-04.vtt"
-# → My Lecture 2024-02-04_clean.txt
-
-# Then paste _clean.txt into Claude / ChatGPT with a prompt from prompts/
+# → creates My Lecture 2024-02-04_clean.txt in the same folder
 ```
+
+**Windows (Command Prompt)**
+```cmd
+python vtt_clean.py "My Lecture 2024-02-04.vtt"
+```
+
+**Windows (PowerShell)**
+```powershell
+python vtt_clean.py "My Lecture 2024-02-04.vtt"
+```
+
+> **Tip:** Drag and drop the `.vtt` file onto your terminal window to auto-paste its full path.
+
+> **Windows tip:** If `python` isn't recognized, try `py vtt_clean.py "..."` instead.
+
+---
+
+## Using the Prompts
+
+After the script creates your `_clean.txt` file:
+
+1. **Open** `_clean.txt` in any text editor (Notepad, TextEdit, VS Code) → **Select All** (`Ctrl+A` / `Cmd+A`) → **Copy** (`Ctrl+C` / `Cmd+C`)
+2. **Open** one of the prompt files from the `prompts/en/` folder (e.g., `prompts/en/study-notes.md`)
+3. **Copy** the text inside the ` ``` ` code block (that's your prompt)
+4. Go to **[claude.ai](https://claude.ai)** (or chatgpt.com / gemini.google.com) → start a **New chat**
+5. **Paste** the prompt into the chat message box
+6. Scroll to the bottom of the prompt, **replace** `[PASTE THE CONTENT OF _clean.txt HERE]` with the transcript you copied in step 1
+7. **Send** — wait ~30 seconds — your structured study notes appear
+
+---
+
+## Prompt Library
+
+| Prompt | Language | Use Case | Output Length |
+|--------|----------|----------|--------------|
+| [`prompts/en/study-notes.md`](prompts/en/study-notes.md) | 🇬🇧 English | Full 5-section academic analysis | ~5 min read |
+| [`prompts/en/quick-summary.md`](prompts/en/quick-summary.md) | 🇬🇧 English | 5-bullet overview | ~1 min read |
+| [`prompts/en/concepts-only.md`](prompts/en/concepts-only.md) | 🇬🇧 English | Concept glossary / terminology | ~3 min read |
+| [`prompts/pt-BR/study-notes.md`](prompts/pt-BR/study-notes.md) | 🇧🇷 Português | Análise acadêmica completa | ~5 min |
+| [`prompts/pt-BR/quick-summary.md`](prompts/pt-BR/quick-summary.md) | 🇧🇷 Português | Resumo rápido em 5 pontos | ~1 min |
+| [`prompts/pt-BR/concepts-only.md`](prompts/pt-BR/concepts-only.md) | 🇧🇷 Português | Glossário de conceitos | ~3 min |
+
+See [`examples/sample_output.md`](examples/sample_output.md) for a real example of what the AI produces.
 
 ---
 
 ## Output Format
+
+The cleaned file has one paragraph block per ~60 seconds, each with a timestamp:
 
 ```
 [00:03:10] A partir de hoje a gente vai começar um pouco teórico,
@@ -70,34 +173,10 @@ aplicada ao computador humano. Interação humano computador...
 
 ---
 
-## Prompt Library
-
-| Prompt | Use Case | Time to Read |
-|--------|----------|-------------|
-| [`study-notes.md`](prompts/study-notes.md) | Full academic analysis (5 sections) | ~5 min |
-| [`quick-summary.md`](prompts/quick-summary.md) | 5-bullet overview | ~1 min |
-| [`concepts-only.md`](prompts/concepts-only.md) | Glossary / terminology | ~3 min |
-
-See [`examples/sample_output.md`](examples/sample_output.md) for a real output example.
-
----
-
-## Workflow
+## All Options
 
 ```
-1. Download .vtt from your university portal        (~30 sec)
-2. python3 vtt_clean.py "lecture.vtt"              (~5 sec)
-3. Open Claude.ai / ChatGPT → New chat             (~10 sec)
-4. Paste prompt + contents of _clean.txt            (~1 min)
-5. Read structured output, jump to key timestamps   (study time)
-```
-
----
-
-## Options
-
-```
-python3 vtt_clean.py --help
+python3 vtt_clean.py [OPTIONS] vtt_file
 
 positional arguments:
   vtt_file              Path to the .vtt file
@@ -105,30 +184,56 @@ positional arguments:
 options:
   --block-seconds N     Seconds per paragraph block (default: 60)
   --output FILE, -o     Custom output file path
-  --stdout              Print to stdout (pipe-friendly)
+  --stdout              Print to stdout instead of writing a file
+  -h, --help            Show this help message
 ```
 
-**Examples:**
+**More examples:**
+
 ```bash
-# Larger blocks (less fragmented)
+# Larger blocks — less fragmented, better for long monologues
 python3 vtt_clean.py lecture.vtt --block-seconds 90
 
-# Pipe directly into clipboard (Linux)
+# Save to a specific location (Linux/Mac)
+python3 vtt_clean.py lecture.vtt --output ~/Desktop/clean.txt
+
+# Save to a specific location (Windows)
+python vtt_clean.py lecture.vtt --output "C:\Users\You\Desktop\clean.txt"
+
+# Copy output directly to clipboard (Mac)
+python3 vtt_clean.py lecture.vtt --stdout | pbcopy
+
+# Copy output directly to clipboard (Linux)
 python3 vtt_clean.py lecture.vtt --stdout | xclip -selection clipboard
 
-# Batch process a whole folder
+# Batch process all VTTs in a folder (Linux/Mac)
 for f in lectures/*.vtt; do python3 vtt_clean.py "$f"; done
+
+# Batch process all VTTs in a folder (Windows PowerShell)
+Get-ChildItem -Filter *.vtt | ForEach-Object { python vtt_clean.py $_.FullName }
 ```
 
 ---
 
-## Compatibility
+## Platform Notes
+
+| Platform | Python command | Terminal to open |
+|----------|---------------|-----------------|
+| Windows | `python` or `py` | Command Prompt (`cmd`) or PowerShell |
+| Mac | `python3` | Terminal (Cmd+Space → "Terminal") |
+| Linux | `python3` | Your distro's terminal emulator |
+
+> **Windows path tip:** Use quotes around paths with spaces: `python vtt_clean.py "C:\My Lectures\week1.vtt"`
+
+---
+
+## VTT Source Compatibility
 
 Tested with VTT files exported from:
-- **Microsoft Teams** (university portals)
+- **Microsoft Teams** (university portals, recorded meetings)
 - **Zoom** (auto-generated captions)
-- **Google Meet** (with caption recording)
-- **YouTube** (auto-generated, download via `yt-dlp --write-auto-sub`)
+- **Google Meet** (with caption recording enabled)
+- **YouTube** (auto-generated — download with `yt-dlp --write-auto-sub --sub-lang en URL`)
 
 ---
 
@@ -138,9 +243,14 @@ Tested with VTT files exported from:
 VTT-to-Insights/
 ├── vtt_clean.py               ← Main script (no dependencies)
 ├── prompts/
-│   ├── study-notes.md         ← Full academic analysis prompt (Portuguese)
-│   ├── quick-summary.md       ← 5-bullet quick summary prompt
-│   └── concepts-only.md       ← Glossary / concepts extraction prompt
+│   ├── en/                    ← English prompts
+│   │   ├── study-notes.md
+│   │   ├── quick-summary.md
+│   │   └── concepts-only.md
+│   └── pt-BR/                 ← Portuguese prompts
+│       ├── study-notes.md
+│       ├── quick-summary.md
+│       └── concepts-only.md
 ├── examples/
 │   └── sample_output.md       ← Anonymized example output
 ├── README.md                  ← This file (English)
@@ -156,9 +266,9 @@ Contributions welcome! Especially:
 - Support for additional VTT dialects
 - Speaker diarization (separate speakers)
 - More prompt templates (exam prep, mind map generation)
-- Language support beyond Portuguese/English
+- Translations to other languages
 
-Open an issue or submit a PR.
+Open an issue or submit a PR at [github.com/maxh33/VTT-to-Insights](https://github.com/maxh33/VTT-to-Insights).
 
 ---
 

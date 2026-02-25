@@ -79,4 +79,4 @@ A aula foi encerrada com o enunciado da primeira atividade: criação de um Mapa
 
 ---
 
-*Generated with VTT-to-Insights · github.com/yourusername/VTT-to-Insights*
+*Generated with VTT-to-Insights · [github.com/maxh33/VTT-to-Insights](https://github.com/maxh33/VTT-to-Insights)*
