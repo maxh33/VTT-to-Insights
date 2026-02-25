@@ -109,7 +109,6 @@ Nenhum `pip install` é necessário — o script usa apenas bibliotecas nativas 
 **Linux / Mac**
 ```bash
 python3 vtt_clean.py "Minha Aula 04-02-2024.vtt"
-# → cria Minha Aula 04-02-2024_clean.txt na mesma pasta
 ```
 
 **Windows (Prompt de Comando)**
@@ -125,6 +124,72 @@ python vtt_clean.py "Minha Aula 04-02-2024.vtt"
 > **Dica:** Arraste e solte o arquivo `.vtt` na janela do terminal para colar o caminho completo automaticamente.
 
 > **Dica Windows:** Se `python` não for reconhecido, tente `py vtt_clean.py "..."`.
+
+**O que você verá no terminal:**
+
+```
+──────────────────────────────────────────────────────
+  VTT-to-Insights  ·  Minha Aula 04-02-2024.vtt
+──────────────────────────────────────────────────────
+                            BEFORE        AFTER    SAVED
+  Lines / blocks            11,247       166 blk
+  Tokens (est.)            ~98,000      ~32,428      67%
+  File size (KB)            381.3       126.7      67%
+──────────────────────────────────────────────────────
+  Saved : Minha Aula 04-02-2024_clean.txt
+  Folder: /caminho/para/suas/aulas
+  Next  : open a prompt from prompts/en/ or prompts/pt-BR/
+          paste Minha Aula 04-02-2024_clean.txt into Claude / Gemini / ChatGPT
+──────────────────────────────────────────────────────
+```
+
+Uma aula de 3 horas passa de ~98.000 tokens barulhentos para ~32.000 limpos — uma **redução de 67%** que cabe confortavelmente na janela de contexto de qualquer IA.
+
+---
+
+### Arquivo VTT em outra pasta
+
+Você não precisa mover o arquivo `.vtt` para dentro do projeto. Passe o caminho completo do arquivo diretamente — o script funciona de qualquer lugar.
+
+> **Dica:** Arraste e solte o arquivo `.vtt` na janela do terminal para colar o caminho completo automaticamente.
+> **Dica:** Pressione `Tab` para autocompletar nomes de pastas e arquivos enquanto digita.
+
+**Linux**
+```bash
+# Arquivo em ~/Documents
+python3 ~/VTT-to-Insights/vtt_clean.py ~/Documents/aula.vtt
+
+# Arquivo em pasta de nuvem ou drive montado
+python3 ~/VTT-to-Insights/vtt_clean.py "/mnt/storage/Faculdade/1 Semestre/aula.vtt"
+```
+
+**Mac**
+```bash
+# Arquivo em Downloads
+python3 ~/VTT-to-Insights/vtt_clean.py ~/Downloads/aula.vtt
+
+# Arquivo em pasta de disciplina dentro de Documentos
+python3 ~/VTT-to-Insights/vtt_clean.py "/Users/seunome/Documents/Faculdade/1 Semestre/aula.vtt"
+
+# Arquivo no iCloud Drive
+python3 ~/VTT-to-Insights/vtt_clean.py ~/Library/Mobile\ Documents/com~apple~CloudDocs/aula.vtt
+```
+
+**Windows (Prompt de Comando)**
+```cmd
+python C:\Users\SeuNome\VTT-to-Insights\vtt_clean.py "C:\Users\SeuNome\Downloads\aula.vtt"
+python C:\Users\SeuNome\VTT-to-Insights\vtt_clean.py "C:\Users\SeuNome\Documents\Faculdade\1 Semestre\aula.vtt"
+```
+
+**Windows (PowerShell)**
+```powershell
+python C:\Users\SeuNome\VTT-to-Insights\vtt_clean.py "C:\Users\SeuNome\Downloads\aula.vtt"
+python C:\Users\SeuNome\VTT-to-Insights\vtt_clean.py "C:\Users\SeuNome\Documents\Faculdade\1 Semestre\aula.vtt"
+```
+
+> **Sempre escreva o comando em uma única linha.** Dividir com `\` + Enter causa erro de "arquivo não encontrado" porque o shell adiciona um espaço no início do caminho.
+
+> **Local do arquivo de saída:** O arquivo `_clean.txt` é salvo na mesma pasta do `.vtt` — não na pasta do projeto.
 
 ---
 

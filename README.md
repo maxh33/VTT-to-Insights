@@ -109,7 +109,6 @@ No `pip install` required — the script uses only Python's built-in libraries.
 **Linux / Mac**
 ```bash
 python3 vtt_clean.py "My Lecture 2024-02-04.vtt"
-# → creates My Lecture 2024-02-04_clean.txt in the same folder
 ```
 
 **Windows (Command Prompt)**
@@ -125,6 +124,72 @@ python vtt_clean.py "My Lecture 2024-02-04.vtt"
 > **Tip:** Drag and drop the `.vtt` file onto your terminal window to auto-paste its full path.
 
 > **Windows tip:** If `python` isn't recognized, try `py vtt_clean.py "..."` instead.
+
+**What you'll see in the terminal:**
+
+```
+──────────────────────────────────────────────────────
+  VTT-to-Insights  ·  My Lecture 2024-02-04.vtt
+──────────────────────────────────────────────────────
+                            BEFORE        AFTER    SAVED
+  Lines / blocks            11,247       166 blk
+  Tokens (est.)            ~98,000      ~32,428      67%
+  File size (KB)            381.3       126.7      67%
+──────────────────────────────────────────────────────
+  Saved : My Lecture 2024-02-04_clean.txt
+  Folder: /path/to/your/lectures
+  Next  : open a prompt from prompts/en/ or prompts/pt-BR/
+          paste My Lecture 2024-02-04_clean.txt into Claude / Gemini / ChatGPT
+──────────────────────────────────────────────────────
+```
+
+A 3-hour lecture goes from ~98,000 noisy tokens down to ~32,000 clean ones — a **67% reduction** that fits comfortably in any AI context window.
+
+---
+
+### VTT file in a different folder
+
+You don't need to move your `.vtt` file into the project folder. Pass the full path to the file directly — the script works from anywhere.
+
+> **Tip:** Drag and drop the `.vtt` file onto your terminal window to paste its full path automatically.
+> **Tip:** Press `Tab` to autocomplete folder and file names while typing.
+
+**Linux**
+```bash
+# File in ~/Documents
+python3 ~/VTT-to-Insights/vtt_clean.py ~/Documents/lecture.vtt
+
+# File on a mounted drive or university cloud folder
+python3 ~/VTT-to-Insights/vtt_clean.py "/mnt/storage/University/Semester 1/lecture.vtt"
+```
+
+**Mac**
+```bash
+# File in Downloads
+python3 ~/VTT-to-Insights/vtt_clean.py ~/Downloads/lecture.vtt
+
+# File in a course folder inside Documents
+python3 ~/VTT-to-Insights/vtt_clean.py "/Users/yourname/Documents/University/Semester 1/lecture.vtt"
+
+# File in iCloud Drive
+python3 ~/VTT-to-Insights/vtt_clean.py ~/Library/Mobile\ Documents/com~apple~CloudDocs/lecture.vtt
+```
+
+**Windows (Command Prompt)**
+```cmd
+python C:\Users\YourName\VTT-to-Insights\vtt_clean.py "C:\Users\YourName\Downloads\lecture.vtt"
+python C:\Users\YourName\VTT-to-Insights\vtt_clean.py "C:\Users\YourName\Documents\University\Semester 1\lecture.vtt"
+```
+
+**Windows (PowerShell)**
+```powershell
+python C:\Users\YourName\VTT-to-Insights\vtt_clean.py "C:\Users\YourName\Downloads\lecture.vtt"
+python C:\Users\YourName\VTT-to-Insights\vtt_clean.py "C:\Users\YourName\Documents\University\Semester 1\lecture.vtt"
+```
+
+> **Always keep the command on a single line.** Splitting with `\` + Enter causes a "file not found" error because the shell adds a leading space to the path.
+
+> **Output location:** The `_clean.txt` file is saved next to your `.vtt` file — not in the project folder.
 
 ---
 
