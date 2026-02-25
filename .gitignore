@@ -1,0 +1,40 @@
+# Output files (don't commit cleaned transcripts)
+*_clean.txt
+
+# VTT source files (don't share lecture recordings)
+*.vtt
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Secrets
+.env
+.env.*
+.env*.local
+*.pem
+*.key
+*.secret
+secrets.*
+credentials.*
+oauth_creds.json
+id_rsa
+id_ed25519
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
