@@ -143,6 +143,34 @@ def format_blocks(blocks) -> str:
     return '\n'.join(lines).rstrip() + '\n'
 
 
+def print_summary(filename, raw_lines, raw_tokens, raw_chars,
+                  n_blocks, block_seconds, out_tokens, out_chars,
+                  out_path=None, to_stdout=False):
+    token_saved_pct = round((1 - out_tokens / raw_tokens) * 100) if raw_tokens else 0
+    size_saved_pct  = round((1 - out_chars  / raw_chars)  * 100) if raw_chars  else 0
+    sep = "─" * 54
+
+    def p(msg=""):
+        print(msg, file=sys.stderr)
+
+    p(sep)
+    p(f"  VTT-to-Insights  ·  {filename}")
+    p(sep)
+    p(f"  {'':20}  {'BEFORE':>10}   {'AFTER':>10}   {'SAVED':>6}")
+    raw_tok_str = f"~{raw_tokens:,}"
+    out_tok_str = f"~{out_tokens:,}"
+    p(f"  {'Lines / blocks':20}  {raw_lines:>10,}   {n_blocks:>7,} blk")
+    p(f"  {'Tokens (est.)':20}  {raw_tok_str:>10}   {out_tok_str:>10}   {token_saved_pct:>5}%")
+    p(f"  {'File size (KB)':20}  {raw_chars/1024:>9.1f}   {out_chars/1024:>9.1f}   {size_saved_pct:>5}%")
+    p(sep)
+    if not to_stdout and out_path:
+        p(f"  Saved : {out_path.name}")
+        p(f"  Folder: {out_path.parent}")
+        p(f"  Next  : open a prompt from prompts/en/ or prompts/pt-BR/")
+        p(f"          paste {out_path.name} into Claude / Gemini / ChatGPT")
+        p(sep)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Clean a VTT lecture transcript for LLM input.'
@@ -169,28 +197,36 @@ def main():
     if vtt_path.suffix.lower() != '.vtt':
         print(f"Warning: file does not have .vtt extension: {vtt_path}", file=sys.stderr)
 
-    print(f"Parsing: {vtt_path.name}", file=sys.stderr)
+    # Capture raw stats for before/after comparison
+    raw_content = vtt_path.read_text(encoding='utf-8', errors='replace')
+    raw_lines = raw_content.count('\n') + 1
+    raw_chars = len(raw_content)
+    raw_tokens = raw_chars // 4
+
     cues = list(parse_vtt(vtt_path))
-    print(f"  Cues found: {len(cues)}", file=sys.stderr)
-
     blocks = merge_into_blocks(cues, block_seconds=args.block_seconds)
-    print(f"  Blocks ({args.block_seconds}s each): {len(blocks)}", file=sys.stderr)
-
     output = format_blocks(blocks)
 
     # Rough token estimate (Portuguese averages ~4 chars/token)
     token_estimate = len(output) // 4
-    print(f"  Output size: {len(output):,} chars (~{token_estimate:,} tokens)", file=sys.stderr)
 
     if args.stdout:
         print(output)
+        out_path = None
     else:
         out_path = Path(args.output) if args.output else vtt_path.with_name(
             vtt_path.stem + '_clean.txt'
         )
         out_path.write_text(output, encoding='utf-8')
-        print(f"  Saved to: {out_path}", file=sys.stderr)
-        print(f"\nDone. Paste {out_path.name} into Claude.ai with the prompt from prompts/study-notes.md", file=sys.stderr)
+
+    print_summary(
+        filename=vtt_path.name,
+        raw_lines=raw_lines, raw_tokens=raw_tokens, raw_chars=raw_chars,
+        n_blocks=len(blocks), block_seconds=args.block_seconds,
+        out_tokens=token_estimate, out_chars=len(output),
+        out_path=out_path,
+        to_stdout=args.stdout,
+    )
 
 
 if __name__ == '__main__':
