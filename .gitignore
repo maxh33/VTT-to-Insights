@@ -17,12 +17,15 @@ build/
 # Secrets
 .env
 .env.*
+.env.local
 .env*.local
 *.pem
 *.key
 *.secret
 secrets.*
+secrets.json
 credentials.*
+credentials.json
 oauth_creds.json
 id_rsa
 id_ed25519
