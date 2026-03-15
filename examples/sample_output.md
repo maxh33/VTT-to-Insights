@@ -1,7 +1,7 @@
 # Sample Output — Interface e Jornada do Usuário
 
 > **Note:** This is an anonymized example output generated from a real 3-hour lecture
-> transcript using `vtt_clean.py` + the `study-notes.md` prompt.
+> transcript using `scripts/vtt_clean.py` + the `study-notes.md` prompt.
 > Professor names and student-identifying details have been removed.
 
 ---

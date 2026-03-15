@@ -30,8 +30,8 @@ After VTT-to-Insights: **~32k tokens**, clean paragraphs with timestamps.
 
 ## Features
 
-- **Noise Reduction** — Removes UUIDs, WEBVTT headers, inline timing tags, blank lines
-- **Token Optimization** — Shrinks file size 60–70% to fit within AI context windows
+- **Noise Reduction** — Removes UUIDs, WEBVTT headers, inline timing tags, blank lines, and Brazilian Portuguese verbal fillers (`né`, `tá`, `bom?`, `gente`, `ó`, etc.)
+- **Token Optimization** — Shrinks file size 45–70% depending on source format (VTT with UUIDs: ~60–70%; VTT without UUIDs: ~50–60%; SRT: ~40–50%)
 - **Smart Merging** — Converts fragmented cues into readable ~60-second paragraph blocks
 - **Timestamp Preservation** — Every block keeps its `[HH:MM:SS]` marker for video navigation
 - **Bilingual Prompt Library** — Ready-made prompts in English and Portuguese
@@ -108,22 +108,22 @@ No `pip install` required — the script uses only Python's built-in libraries.
 
 **Linux / Mac**
 ```bash
-python3 vtt_clean.py "My Lecture 2024-02-04.vtt"
+python3 scripts/vtt_clean.py "My Lecture 2024-02-04.vtt"
 ```
 
 **Windows (Command Prompt)**
 ```cmd
-python vtt_clean.py "My Lecture 2024-02-04.vtt"
+python scripts/vtt_clean.py "My Lecture 2024-02-04.vtt"
 ```
 
 **Windows (PowerShell)**
 ```powershell
-python vtt_clean.py "My Lecture 2024-02-04.vtt"
+python scripts/vtt_clean.py "My Lecture 2024-02-04.vtt"
 ```
 
 > **Tip:** Drag and drop the `.vtt` file onto your terminal window to auto-paste its full path.
 
-> **Windows tip:** If `python` isn't recognized, try `py vtt_clean.py "..."` instead.
+> **Windows tip:** If `python` isn't recognized, try `py scripts/vtt_clean.py "..."` instead.
 
 **What you'll see in the terminal:**
 
@@ -157,34 +157,34 @@ You don't need to move your `.vtt` file into the project folder. Pass the full p
 **Linux**
 ```bash
 # File in ~/Documents
-python3 ~/VTT-to-Insights/vtt_clean.py ~/Documents/lecture.vtt
+python3 ~/VTT-to-Insights/scripts/vtt_clean.py ~/Documents/lecture.vtt
 
 # File on a mounted drive or university cloud folder
-python3 ~/VTT-to-Insights/vtt_clean.py "/mnt/storage/University/Semester 1/lecture.vtt"
+python3 ~/VTT-to-Insights/scripts/vtt_clean.py "/mnt/storage/University/Semester 1/lecture.vtt"
 ```
 
 **Mac**
 ```bash
 # File in Downloads
-python3 ~/VTT-to-Insights/vtt_clean.py ~/Downloads/lecture.vtt
+python3 ~/VTT-to-Insights/scripts/vtt_clean.py ~/Downloads/lecture.vtt
 
 # File in a course folder inside Documents
-python3 ~/VTT-to-Insights/vtt_clean.py "/Users/yourname/Documents/University/Semester 1/lecture.vtt"
+python3 ~/VTT-to-Insights/scripts/vtt_clean.py "/Users/yourname/Documents/University/Semester 1/lecture.vtt"
 
 # File in iCloud Drive
-python3 ~/VTT-to-Insights/vtt_clean.py ~/Library/Mobile\ Documents/com~apple~CloudDocs/lecture.vtt
+python3 ~/VTT-to-Insights/scripts/vtt_clean.py ~/Library/Mobile\ Documents/com~apple~CloudDocs/lecture.vtt
 ```
 
 **Windows (Command Prompt)**
 ```cmd
-python C:\Users\YourName\VTT-to-Insights\vtt_clean.py "C:\Users\YourName\Downloads\lecture.vtt"
-python C:\Users\YourName\VTT-to-Insights\vtt_clean.py "C:\Users\YourName\Documents\University\Semester 1\lecture.vtt"
+python C:\Users\YourName\VTT-to-Insights\scripts\vtt_clean.py "C:\Users\YourName\Downloads\lecture.vtt"
+python C:\Users\YourName\VTT-to-Insights\scripts\vtt_clean.py "C:\Users\YourName\Documents\University\Semester 1\lecture.vtt"
 ```
 
 **Windows (PowerShell)**
 ```powershell
-python C:\Users\YourName\VTT-to-Insights\vtt_clean.py "C:\Users\YourName\Downloads\lecture.vtt"
-python C:\Users\YourName\VTT-to-Insights\vtt_clean.py "C:\Users\YourName\Documents\University\Semester 1\lecture.vtt"
+python C:\Users\YourName\VTT-to-Insights\scripts\vtt_clean.py "C:\Users\YourName\Downloads\lecture.vtt"
+python C:\Users\YourName\VTT-to-Insights\scripts\vtt_clean.py "C:\Users\YourName\Documents\University\Semester 1\lecture.vtt"
 ```
 
 > **Always keep the command on a single line.** Splitting with `\` + Enter causes a "file not found" error because the shell adds a leading space to the path.
@@ -241,7 +241,7 @@ aplicada ao computador humano. Interação humano computador...
 ## All Options
 
 ```
-python3 vtt_clean.py [OPTIONS] vtt_file
+python3 scripts/vtt_clean.py [OPTIONS] vtt_file
 
 positional arguments:
   vtt_file              Path to the .vtt file
@@ -257,25 +257,25 @@ options:
 
 ```bash
 # Larger blocks — less fragmented, better for long monologues
-python3 vtt_clean.py lecture.vtt --block-seconds 90
+python3 scripts/vtt_clean.py lecture.vtt --block-seconds 90
 
 # Save to a specific location (Linux/Mac)
-python3 vtt_clean.py lecture.vtt --output ~/Desktop/clean.txt
+python3 scripts/vtt_clean.py lecture.vtt --output ~/Desktop/clean.txt
 
 # Save to a specific location (Windows)
-python vtt_clean.py lecture.vtt --output "C:\Users\You\Desktop\clean.txt"
+python scripts/vtt_clean.py lecture.vtt --output "C:\Users\You\Desktop\clean.txt"
 
 # Copy output directly to clipboard (Mac)
-python3 vtt_clean.py lecture.vtt --stdout | pbcopy
+python3 scripts/vtt_clean.py lecture.vtt --stdout | pbcopy
 
 # Copy output directly to clipboard (Linux)
-python3 vtt_clean.py lecture.vtt --stdout | xclip -selection clipboard
+python3 scripts/vtt_clean.py lecture.vtt --stdout | xclip -selection clipboard
 
 # Batch process all VTTs in a folder (Linux/Mac)
-for f in lectures/*.vtt; do python3 vtt_clean.py "$f"; done
+for f in lectures/*.vtt; do python3 scripts/vtt_clean.py "$f"; done
 
 # Batch process all VTTs in a folder (Windows PowerShell)
-Get-ChildItem -Filter *.vtt | ForEach-Object { python vtt_clean.py $_.FullName }
+Get-ChildItem -Filter *.vtt | ForEach-Object { python scripts/vtt_clean.py $_.FullName }
 ```
 
 ---
@@ -288,17 +288,38 @@ Get-ChildItem -Filter *.vtt | ForEach-Object { python vtt_clean.py $_.FullName }
 | Mac | `python3` | Terminal (Cmd+Space → "Terminal") |
 | Linux | `python3` | Your distro's terminal emulator |
 
-> **Windows path tip:** Use quotes around paths with spaces: `python vtt_clean.py "C:\My Lectures\week1.vtt"`
+> **Windows path tip:** Use quotes around paths with spaces: `python scripts/vtt_clean.py "C:\My Lectures\week1.vtt"`
 
 ---
 
-## VTT Source Compatibility
+## Source Format Compatibility
 
+### VTT files
 Tested with VTT files exported from:
-- **Microsoft Teams** (university portals, recorded meetings)
+- **Microsoft Teams** (university portals, recorded meetings) — ~60–70% token reduction (UUID cue IDs add significant noise)
 - **Zoom** (auto-generated captions)
 - **Google Meet** (with caption recording enabled)
 - **YouTube** (auto-generated — download with `yt-dlp --write-auto-sub --sub-lang en URL`)
+
+### SRT files (LocalVocal / OBS)
+If your recording tool exports `.srt` instead of `.vtt` (e.g. **LocalVocal** OBS plugin), use the included converter first:
+
+```bash
+# Step 1 — Convert SRT → VTT
+python3 scripts/srt_to_vtt.py "lecture.srt"
+
+# Step 2 — Clean as usual
+python3 scripts/vtt_clean.py "lecture.vtt"
+```
+
+The converter also handles files **without an extension** (common with some OBS setups):
+
+```bash
+python3 scripts/srt_to_vtt.py "Lecture Name 04-03 19h" --output lecture.vtt
+python3 scripts/vtt_clean.py lecture.vtt
+```
+
+> **Token reduction for SRT:** ~40–50% (SRT files don't contain UUID cue IDs, so the savings come mainly from merging fragmented cues and stripping timestamps).
 
 ---
 
@@ -306,7 +327,10 @@ Tested with VTT files exported from:
 
 ```
 VTT-to-Insights/
-├── vtt_clean.py               ← Main script (no dependencies)
+├── scripts/
+│   ├── vtt_clean.py           ← Main script (no dependencies)
+│   ├── srt_to_vtt.py          ← Convert SRT (LocalVocal/OBS) → VTT
+│   └── transcribe.py          ← Whisper-based local transcription helper
 ├── prompts/
 │   ├── en/                    ← English prompts
 │   │   ├── study-notes.md

@@ -30,8 +30,8 @@ Depois do VTT-to-Insights: **~32k tokens**, parágrafos limpos com timestamps.
 
 ## Funcionalidades
 
-- **Redução de Ruído** — Remove UUIDs, cabeçalhos WEBVTT, tags de tempo inline, linhas em branco
-- **Otimização de Tokens** — Reduz o tamanho do arquivo em 60–70% para caber na janela de contexto da IA
+- **Redução de Ruído** — Remove UUIDs, cabeçalhos WEBVTT, tags de tempo inline, linhas em branco e fillers verbais do português (`né`, `tá`, `bom?`, `gente`, `ó`, etc.)
+- **Otimização de Tokens** — Reduz o tamanho do arquivo em 45–70% dependendo do formato de origem (VTT com UUIDs: ~60–70%; VTT sem UUIDs: ~50–60%; SRT: ~40–50%)
 - **Mesclagem Inteligente** — Converte cues fragmentadas em blocos de parágrafo legíveis de ~60 segundos
 - **Preservação de Timestamps** — Cada bloco mantém seu marcador `[HH:MM:SS]` para navegar no vídeo
 - **Biblioteca de Prompts Bilíngue** — Prompts prontos em Português e Inglês
@@ -108,22 +108,22 @@ Nenhum `pip install` é necessário — o script usa apenas bibliotecas nativas 
 
 **Linux / Mac**
 ```bash
-python3 vtt_clean.py "Minha Aula 04-02-2024.vtt"
+python3 scripts/vtt_clean.py "Minha Aula 04-02-2024.vtt"
 ```
 
 **Windows (Prompt de Comando)**
 ```cmd
-python vtt_clean.py "Minha Aula 04-02-2024.vtt"
+python scripts/vtt_clean.py "Minha Aula 04-02-2024.vtt"
 ```
 
 **Windows (PowerShell)**
 ```powershell
-python vtt_clean.py "Minha Aula 04-02-2024.vtt"
+python scripts/vtt_clean.py "Minha Aula 04-02-2024.vtt"
 ```
 
 > **Dica:** Arraste e solte o arquivo `.vtt` na janela do terminal para colar o caminho completo automaticamente.
 
-> **Dica Windows:** Se `python` não for reconhecido, tente `py vtt_clean.py "..."`.
+> **Dica Windows:** Se `python` não for reconhecido, tente `py scripts/vtt_clean.py "..."`.
 
 **O que você verá no terminal:**
 
@@ -157,34 +157,34 @@ Você não precisa mover o arquivo `.vtt` para dentro do projeto. Passe o caminh
 **Linux**
 ```bash
 # Arquivo em ~/Documents
-python3 ~/VTT-to-Insights/vtt_clean.py ~/Documents/aula.vtt
+python3 ~/VTT-to-Insights/scripts/vtt_clean.py ~/Documents/aula.vtt
 
 # Arquivo em pasta de nuvem ou drive montado
-python3 ~/VTT-to-Insights/vtt_clean.py "/mnt/storage/Faculdade/1 Semestre/aula.vtt"
+python3 ~/VTT-to-Insights/scripts/vtt_clean.py "/mnt/storage/Faculdade/1 Semestre/aula.vtt"
 ```
 
 **Mac**
 ```bash
 # Arquivo em Downloads
-python3 ~/VTT-to-Insights/vtt_clean.py ~/Downloads/aula.vtt
+python3 ~/VTT-to-Insights/scripts/vtt_clean.py ~/Downloads/aula.vtt
 
 # Arquivo em pasta de disciplina dentro de Documentos
-python3 ~/VTT-to-Insights/vtt_clean.py "/Users/seunome/Documents/Faculdade/1 Semestre/aula.vtt"
+python3 ~/VTT-to-Insights/scripts/vtt_clean.py "/Users/seunome/Documents/Faculdade/1 Semestre/aula.vtt"
 
 # Arquivo no iCloud Drive
-python3 ~/VTT-to-Insights/vtt_clean.py ~/Library/Mobile\ Documents/com~apple~CloudDocs/aula.vtt
+python3 ~/VTT-to-Insights/scripts/vtt_clean.py ~/Library/Mobile\ Documents/com~apple~CloudDocs/aula.vtt
 ```
 
 **Windows (Prompt de Comando)**
 ```cmd
-python C:\Users\SeuNome\VTT-to-Insights\vtt_clean.py "C:\Users\SeuNome\Downloads\aula.vtt"
-python C:\Users\SeuNome\VTT-to-Insights\vtt_clean.py "C:\Users\SeuNome\Documents\Faculdade\1 Semestre\aula.vtt"
+python C:\Users\SeuNome\VTT-to-Insights\scripts\vtt_clean.py "C:\Users\SeuNome\Downloads\aula.vtt"
+python C:\Users\SeuNome\VTT-to-Insights\scripts\vtt_clean.py "C:\Users\SeuNome\Documents\Faculdade\1 Semestre\aula.vtt"
 ```
 
 **Windows (PowerShell)**
 ```powershell
-python C:\Users\SeuNome\VTT-to-Insights\vtt_clean.py "C:\Users\SeuNome\Downloads\aula.vtt"
-python C:\Users\SeuNome\VTT-to-Insights\vtt_clean.py "C:\Users\SeuNome\Documents\Faculdade\1 Semestre\aula.vtt"
+python C:\Users\SeuNome\VTT-to-Insights\scripts\vtt_clean.py "C:\Users\SeuNome\Downloads\aula.vtt"
+python C:\Users\SeuNome\VTT-to-Insights\scripts\vtt_clean.py "C:\Users\SeuNome\Documents\Faculdade\1 Semestre\aula.vtt"
 ```
 
 > **Sempre escreva o comando em uma única linha.** Dividir com `\` + Enter causa erro de "arquivo não encontrado" porque o shell adiciona um espaço no início do caminho.
@@ -241,7 +241,7 @@ aplicada ao computador humano. Interação humano computador...
 ## Todas as Opções
 
 ```
-python3 vtt_clean.py [OPÇÕES] arquivo.vtt
+python3 scripts/vtt_clean.py [OPÇÕES] arquivo.vtt
 
 argumentos posicionais:
   vtt_file              Caminho para o arquivo .vtt
@@ -257,25 +257,25 @@ opções:
 
 ```bash
 # Blocos maiores — menos fragmentados, melhor para monólogos longos
-python3 vtt_clean.py aula.vtt --block-seconds 90
+python3 scripts/vtt_clean.py aula.vtt --block-seconds 90
 
 # Salvar em local específico (Linux/Mac)
-python3 vtt_clean.py aula.vtt --output ~/Desktop/aula_limpa.txt
+python3 scripts/vtt_clean.py aula.vtt --output ~/Desktop/aula_limpa.txt
 
 # Salvar em local específico (Windows)
-python vtt_clean.py aula.vtt --output "C:\Users\Você\Desktop\aula_limpa.txt"
+python scripts/vtt_clean.py aula.vtt --output "C:\Users\Você\Desktop\aula_limpa.txt"
 
 # Copiar output direto para a área de transferência (Mac)
-python3 vtt_clean.py aula.vtt --stdout | pbcopy
+python3 scripts/vtt_clean.py aula.vtt --stdout | pbcopy
 
 # Copiar output direto para a área de transferência (Linux)
-python3 vtt_clean.py aula.vtt --stdout | xclip -selection clipboard
+python3 scripts/vtt_clean.py aula.vtt --stdout | xclip -selection clipboard
 
 # Processar todas as VTTs de uma pasta (Linux/Mac)
-for f in aulas/*.vtt; do python3 vtt_clean.py "$f"; done
+for f in aulas/*.vtt; do python3 scripts/vtt_clean.py "$f"; done
 
 # Processar todas as VTTs de uma pasta (Windows PowerShell)
-Get-ChildItem -Filter *.vtt | ForEach-Object { python vtt_clean.py $_.FullName }
+Get-ChildItem -Filter *.vtt | ForEach-Object { python scripts/vtt_clean.py $_.FullName }
 ```
 
 ---
@@ -288,17 +288,38 @@ Get-ChildItem -Filter *.vtt | ForEach-Object { python vtt_clean.py $_.FullName }
 | Mac | `python3` | Terminal (Cmd+Space → "Terminal") |
 | Linux | `python3` | Terminal da sua distro |
 
-> **Dica Windows com espaços no caminho:** Use aspas: `python vtt_clean.py "C:\Minhas Aulas\semana1.vtt"`
+> **Dica Windows com espaços no caminho:** Use aspas: `python scripts/vtt_clean.py "C:\Minhas Aulas\semana1.vtt"`
 
 ---
 
-## Compatibilidade de Origem do VTT
+## Compatibilidade de Formato de Origem
 
+### Arquivos VTT
 Testado com arquivos VTT exportados de:
-- **Microsoft Teams** (portais universitários, reuniões gravadas)
+- **Microsoft Teams** (portais universitários, reuniões gravadas) — ~60–70% de redução em tokens (IDs UUID de cue adicionam ruído significativo)
 - **Zoom** (legendas geradas automaticamente)
 - **Google Meet** (com gravação de legendas habilitada)
 - **YouTube** (auto-geradas — baixe com `yt-dlp --write-auto-sub --sub-lang pt URL`)
+
+### Arquivos SRT (LocalVocal / OBS)
+Se sua gravação exporta `.srt` em vez de `.vtt` (ex: plugin **LocalVocal** do OBS), use o conversor incluído antes:
+
+```bash
+# Passo 1 — Converter SRT → VTT
+python3 scripts/srt_to_vtt.py "aula.srt"
+
+# Passo 2 — Limpar normalmente
+python3 scripts/vtt_clean.py "aula.vtt"
+```
+
+O conversor também aceita **arquivos sem extensão** (comum em algumas configurações do OBS):
+
+```bash
+python3 scripts/srt_to_vtt.py "Nome da Aula 04-03 19h" --output aula.vtt
+python3 scripts/vtt_clean.py aula.vtt
+```
+
+> **Redução de tokens para SRT:** ~40–50% (arquivos SRT não contêm IDs UUID de cue, então a economia vem principalmente da mesclagem de cues fragmentadas e remoção de timestamps).
 
 ---
 
@@ -306,7 +327,10 @@ Testado com arquivos VTT exportados de:
 
 ```
 VTT-to-Insights/
-├── vtt_clean.py               ← Script principal (sem dependências)
+├── scripts/
+│   ├── vtt_clean.py           ← Script principal (sem dependências)
+│   ├── srt_to_vtt.py          ← Converter SRT (LocalVocal/OBS) → VTT
+│   └── transcribe.py          ← Auxiliar de transcrição local via Whisper
 ├── prompts/
 │   ├── pt-BR/                 ← Prompts em Português
 │   │   ├── study-notes.md

@@ -1,7 +1,7 @@
 # Prompt: Full Lecture Analysis (Academic Study Notes)
 
 > **How to use:**
-> 1. Run `python3 vtt_clean.py "your_lecture.vtt"` to generate the `_clean.txt` file
+> 1. Run `python3 scripts/vtt_clean.py "your_lecture.vtt"` to generate the `_clean.txt` file
 > 2. Open the `_clean.txt` file → select all → copy
 > 3. Go to [claude.ai](https://claude.ai) (or ChatGPT / Gemini) → start a new chat
 > 4. (Optional) Paste the **System Prompt** below into the chat's system settings
