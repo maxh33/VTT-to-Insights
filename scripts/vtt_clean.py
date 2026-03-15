@@ -5,9 +5,9 @@ Strips UUID cue IDs, merges consecutive cues into ~60-second blocks,
 and outputs clean text ready to paste into an LLM.
 
 Usage:
-    python3 vtt_clean.py "path/to/lecture.vtt"
-    python3 vtt_clean.py "path/to/lecture.vtt" --block-seconds 90
-    python3 vtt_clean.py "path/to/lecture.vtt" --output custom_output.txt
+    python3 scripts/vtt_clean.py "path/to/lecture.vtt"
+    python3 scripts/vtt_clean.py "path/to/lecture.vtt" --block-seconds 90
+    python3 scripts/vtt_clean.py "path/to/lecture.vtt" --output custom_output.txt
 """
 
 import re
@@ -27,8 +27,33 @@ TIMESTAMP_RE = re.compile(
 # Match lines that are pure noise: NOTE, WEBVTT header, positional tags, etc.
 NOISE_RE = re.compile(r'^(WEBVTT|NOTE\b|STYLE\b|REGION\b)')
 POSITION_TAG_RE = re.compile(r'<[^>]+>')      # <00:05:11.560>, <c>, </c>, etc.
-FILLER_RE = re.compile(                        # repeated filler phrases
+FILLER_RE = re.compile(                        # repeated filler sounds
     r'\b(é+\s*,?\s*){2,}|\b(ã+\s*,?\s*){2,}',
+    re.IGNORECASE
+)
+# Common Brazilian Portuguese spoken fillers (stripped when standalone or trailing)
+VERBAL_FILLER_RE = re.compile(
+    r'\bvamos dizer assim[,.]?\s*'
+    r'|\bvamos dizer\b[,.]?\s*'
+    r'|\btá[,?!]?\s*(?=\b|$)'
+    r'|\bné[,?!]?\s*(?=\b|$)'
+    r'|(?<! o )(?<!do )(?<!no )(?<!ao )\bpessoal[,?!]\s*'  # vocative (preserve 'o/do/no pessoal')
+    r'|\btum\b[,.]?\s*'
+    r'|(?<![aA] )(?<![Dd]a )\bgente[,?!]\s*'   # "gente" vocative (preserve "a gente")
+    r'|\bó\b\s*'                                # standalone attention-getter
+    r'|\bbom[?!]\s*'                             # "bom?" discourse marker
+    r'|\b[Tt]udo bem[?!]\s*'                    # repeated "Tudo bem?"
+    r'|\bok\?\s*'                              # "ok?" as filler
+    r'|\bÉ[,\.]{1,3}\s+'                       # "É..." / "É, " hesitation
+    r'|\bah\b[,.]?\s*'                          # "ah" interjection
+    r'|\beh\b[,.]?\s*',                         # "eh" interjection
+    re.IGNORECASE
+)
+# Cleanup leftover punctuation artifacts after filler removal
+PUNCT_CLEANUP_RE = re.compile(r'\s*,\s*,|,\s*(?=[.!?])')
+# Repeated consecutive words: "décadas, décadas, décadas" → "décadas"
+REPEATED_WORD_RE = re.compile(
+    r'\b(\w{3,})[,.]?\s+(?:\1[,.]?\s*){2,}',
     re.IGNORECASE
 )
 
@@ -47,6 +72,11 @@ def seconds_to_hms(total_seconds):
 
 def clean_text(text: str) -> str:
     text = POSITION_TAG_RE.sub('', text)   # strip inline timing tags
+    text = FILLER_RE.sub('', text)
+    text = VERBAL_FILLER_RE.sub('', text)
+    text = REPEATED_WORD_RE.sub(r'\1', text)
+    text = PUNCT_CLEANUP_RE.sub(',', text)
+    text = re.sub(r'\s{2,}', ' ', text)   # collapse extra spaces
     text = text.strip()
     return text
 
@@ -133,19 +163,34 @@ def dedupe_consecutive(text: str) -> str:
     return ' '.join(seen)
 
 
-def format_blocks(blocks) -> str:
+def clean_block(text: str) -> tuple[str, list[str]]:
+    """Post-merge cleaning: removes fillers and repeated words within a full block.
+    Returns (cleaned_text, list_of_detected_repetitions)."""
+    warnings = [m.group(0).strip() for m in REPEATED_WORD_RE.finditer(text)]
+    text = VERBAL_FILLER_RE.sub('', text)
+    text = REPEATED_WORD_RE.sub(r'\1', text)
+    text = PUNCT_CLEANUP_RE.sub(',', text)
+    text = re.sub(r'\s{2,}', ' ', text)
+    return text.strip(), warnings
+
+
+def format_blocks(blocks) -> tuple[str, list[tuple]]:
     lines = []
+    hallucinations = []   # [(timestamp_str, pattern), ...]
     for start_sec, text in blocks:
         ts = seconds_to_hms(start_sec)
         text = dedupe_consecutive(text)
+        text, warnings = clean_block(text)
+        for w in warnings:
+            hallucinations.append((ts, w))
         lines.append(f"[{ts}] {text}")
         lines.append("")   # blank line between blocks
-    return '\n'.join(lines).rstrip() + '\n'
+    return '\n'.join(lines).rstrip() + '\n', hallucinations
 
 
 def print_summary(filename, raw_lines, raw_tokens, raw_chars,
                   n_blocks, block_seconds, out_tokens, out_chars,
-                  out_path=None, to_stdout=False):
+                  hallucinations=None, out_path=None, to_stdout=False):
     token_saved_pct = round((1 - out_tokens / raw_tokens) * 100) if raw_tokens else 0
     size_saved_pct  = round((1 - out_chars  / raw_chars)  * 100) if raw_chars  else 0
     sep = "─" * 54
@@ -163,6 +208,13 @@ def print_summary(filename, raw_lines, raw_tokens, raw_chars,
     p(f"  {'Tokens (est.)':20}  {raw_tok_str:>10}   {out_tok_str:>10}   {token_saved_pct:>5}%")
     p(f"  {'File size (KB)':20}  {raw_chars/1024:>9.1f}   {out_chars/1024:>9.1f}   {size_saved_pct:>5}%")
     p(sep)
+    if hallucinations:
+        p(f"  ⚠  {len(hallucinations)} repetição(ões) detectada(s) — possível alucinação do ASR:")
+        for ts, pattern in hallucinations:
+            preview = pattern[:50] + ('…' if len(pattern) > 50 else '')
+            p(f"     [{ts}] \"{preview}\"")
+        p(f"  Revise esses trechos no vídeo original.")
+        p(sep)
     if not to_stdout and out_path:
         p(f"  Saved : {out_path.name}")
         p(f"  Folder: {out_path.parent}")
@@ -205,7 +257,7 @@ def main():
 
     cues = list(parse_vtt(vtt_path))
     blocks = merge_into_blocks(cues, block_seconds=args.block_seconds)
-    output = format_blocks(blocks)
+    output, hallucinations = format_blocks(blocks)
 
     # Rough token estimate (Portuguese averages ~4 chars/token)
     token_estimate = len(output) // 4
@@ -224,6 +276,7 @@ def main():
         raw_lines=raw_lines, raw_tokens=raw_tokens, raw_chars=raw_chars,
         n_blocks=len(blocks), block_seconds=args.block_seconds,
         out_tokens=token_estimate, out_chars=len(output),
+        hallucinations=hallucinations,
         out_path=out_path,
         to_stdout=args.stdout,
     )
