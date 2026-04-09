@@ -7,6 +7,38 @@
 
 ---
 
+## Pré-requisitos: o que coletar antes de rodar
+
+Para cada matéria, verifique que os seguintes arquivos existem na pasta da matéria antes de
+executar o prompt. Inputs incompletos resultam em notas de prova incompletas.
+
+### Obrigatórios
+- [ ] `avisos.txt` — prazos, composição de nota, datas de prova
+- [ ] Ao menos 1 `aulas/*_clean.txt` — transcrição limpa de aula(s)
+
+### Fortemente recomendados
+- [ ] Todos os `aulas/*_clean.txt` disponíveis (um por aula gravada)
+- [ ] Notas de estudo `aulas/*.md` já geradas — rodar `study-notes.md` por aula antes, se ainda não feito
+- [ ] Todos os `material/*.txt` (textos formais das unidades)
+
+### Opcionais — mas acrescentam muito
+- [ ] `atividades/**/devolutiva*.txt` — feedback das atividades entregues
+  → Se existirem, adicionar ao final do prompt:
+  > "Adicione uma seção **Pontos de Atenção** baseada nas devolutivas,
+  >  destacando o que o professor corrigiu, sugeriu e valorizou."
+
+### Se ainda há aulas não processadas
+Processar os SRTs antes de rodar:
+```bash
+# SRT → VTT
+python3 "scripts/srt_to_vtt.py" input.srt --output aulas/aula-NN-DDmes.vtt
+# VTT → _clean.txt
+python3 "scripts/vtt_clean.py" aulas/aula-NN-DDmes.vtt --output aulas/aula-NN-DDmes_clean.txt
+```
+> Workflow completo: `cs-cruzeiro-do-sul/CLAUDE.md` → "Processar novo SRT de aula"
+
+---
+
 ## Como usar
 
 ```bash
