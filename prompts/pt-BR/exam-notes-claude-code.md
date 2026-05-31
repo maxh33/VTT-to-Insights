@@ -120,14 +120,24 @@ Com as seguintes seções:
 6. **Conexões Importantes** — como os temas se relacionam entre si
    (útil para questões de aplicação e cenário)
 
-7. **Questões de Treino** — 15-20 questões SEM respostas, por tipo:
-   Definição/Conceito | Diferenciação | Aplicação/Cenário | Cálculo/Código
+7. **Questões de Treino** — 15-20 questões de múltipla escolha (A/B/C/D),
+   SEM respostas, por tipo:
+   Definição/Conceito | Diferenciação | Aplicação/Cenário | Identificação/Cálculo
+   Formato por questão:
+   ```
+   **N.** Enunciado da questão
+   - A) alternativa
+   - B) alternativa
+   - C) alternativa
+   - D) alternativa
+   ```
 
 8. **Resumo Ultra-Compacto** — bloco de código, máximo 30 linhas,
    para revisão de última hora.
 
-9. **Gabarito** — somente após o Resumo, respostas numeradas
-   (2-5 linhas cada). Formato separado para treino ativo.
+9. **Gabarito** — somente após o Resumo, tabela com:
+   | Nº | Resposta | Justificativa resumida |
+   Formato separado do enunciado para treino ativo.
 
 Priorize o que a professora mais repetiu e usou em exemplos práticos.
 Não inclua timestamps. Foque no conteúdo técnico.
